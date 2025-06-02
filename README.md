@@ -14,6 +14,7 @@ A lightweight Neovim plugin that keeps directories in sync using `inotifywait`, 
 - Reverse sync on startup (optional)
 - Logs and restarts lost watchers automatically
 - Fully typed config for autocompletion and inline docs
+- Automatically expands paths in the config
 
 ## Requirements
 
@@ -34,7 +35,7 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim):
   name = "syncmap.nvim",
   opts = {
     map = {
-      { vim.fn.expand("~/.dotfiles/test/"), vim.fn.expand("~/.config/test/") },
+      { "~/.dotfiles/test/", "~/.config/test/" },
     },
     log_level = "info",
   },
@@ -46,7 +47,7 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim):
 ```lua
 {
   map = {
-    { vim.fn.expand("~/.dotfiles/nvim/"), vim.fn.expand("~/.config/nvim/") },
+    { "~/.dotfiles/nvim/", "~/.config/nvim/" },
   },
   reverse_sync_on_startup = true,
   rsync = { "-a", "--delete" },
@@ -69,8 +70,8 @@ return {
   ---@type SyncmapOpts
   opts = {
     map = {
-      { vim.fn.expand("~/.dotfiles/nvim/"), vim.fn.expand("~/.config/nvim/") },
-      { vim.fn.expand("~/.dotfiles/tmux/"), vim.fn.expand("~/.config/tmux/") },
+      { "~/.dotfiles/nvim/", "~/.config/nvim/" },
+      { "~/.dotfiles/tmux/", "~/.config/tmux/" },
     },
   },
 }
@@ -90,13 +91,15 @@ return {
     ---@type SyncmapOpts
     opts = {
       map = {
-        { vim.fn.expand("~/.dotfiles/nvim/"), vim.fn.expand("~/.config/nvim/") },
-        { vim.fn.expand("~/.dotfiles/tmux/"), vim.fn.expand("~/.config/tmux/") },
+        { "~/.dotfiles/nvim/", "~/.config/nvim/" },
+        { "~/.dotfiles/tmux/", "~/.config/tmux/" },
       },
     },
   }
 }
 ```
+
+## Type Sample
 
 ![type-sample](./doc/type.png)
 
@@ -109,7 +112,7 @@ This gives you full visibility into available options and correct types.
 ```txt
 MIT License
 
-Copyright (c) 2025 Huncho
+Copyright (c) 2025 huncholane
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

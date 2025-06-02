@@ -26,7 +26,7 @@
 
 ---A match to use for syncing using files or folders.
 ---
----Ex: `{vim.fn.expand("~/.dotfiles/nvim/"), vim.fn.expand("~/.config/nvim/")}` sync everything within `~/.dotfiles/nvim` into `~/.config/nvim/`
+---Ex: `{"~/.dotfiles/nvim/", "~/.config/nvim/"}` sync everything within `~/.dotfiles/nvim/` into `~/.config/nvim/`
 ---@class SyncmapConfigMatch
 ---@field [1] RsyncPath @[required] Path to sync from
 ---@field [2] RsyncPath @[required] Path to sync to
@@ -36,7 +36,7 @@
 
 ---Configurations for syncmap
 ---@class SyncmapOpts
----@field map? SyncmapConfigMatch[] @[default=~/.dotfiles/nvim/ ~/.config/nvim] The folders and files to keep synchronized
+---@field map? SyncmapConfigMatch[] @[default=~/.dotfiles/nvim/ ~/.config/nvim/] The folders and files to keep synchronized
 ---@field reverse_sync_on_startup? ReverseSyncOnSpawn
 ---@field rsync? RsyncFlag[] @[default={"-a", "--delete"}] Rsync flags that will be used if a map item doesn't include anything. I.E. Default flags
 ---@field log_level? LogLevel @[default="error"] Sets the log level for syncmap
