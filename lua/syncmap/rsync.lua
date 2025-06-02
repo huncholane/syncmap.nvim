@@ -12,7 +12,7 @@ function M.run(args)
 	if vim.v.shell_error ~= 0 then
 		log.error(table.concat(cmd, " ") .. " failed:\n" .. result)
 	else
-		log.info(table.concat(cmd, " ") .. " succed")
+		log.info(table.concat(cmd, " ") .. " succeeded")
 	end
 	return result
 end

@@ -60,17 +60,41 @@ For inline type hints and autocomplete, annotate your `opts` using:
 
 ```lua
 if false then
-  require("syncmap.lazy")
+  require("syncmap.types")
+  require("lazy.types")
 end
----@type SyncmapLazySpec
+---@type LazySpec
 return {
   "huncholane/syncmap.nvim",
+  ---@type SyncmapOpts
   opts = {
     map = {
-      { vim.fn.expand("~/.dotfiles/test/"), vim.fn.expand("~/.config/test/") },
+      { vim.fn.expand("~/.dotfiles/nvim/"), vim.fn.expand("~/.config/nvim/") },
+      { vim.fn.expand("~/.dotfiles/tmux/"), vim.fn.expand("~/.config/tmux/") },
     },
-    log_level = "info",
   },
+}
+```
+
+or ...
+
+```lua
+if false then
+  require("syncmap.types")
+  require("lazy.types")
+end
+return {
+  ---@type LazySpec
+  {
+    "huncholane/syncmap.nvim",
+    ---@type SyncmapOpts
+    opts = {
+      map = {
+        { vim.fn.expand("~/.dotfiles/nvim/"), vim.fn.expand("~/.config/nvim/") },
+        { vim.fn.expand("~/.dotfiles/tmux/"), vim.fn.expand("~/.config/tmux/") },
+      },
+    },
+  }
 }
 ```
 
