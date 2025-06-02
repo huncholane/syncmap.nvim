@@ -26,7 +26,7 @@
 
 ---A match to use for syncing using files or folders.
 ---
----Ex: `{vim.fn.expand("~/.dotfiles/nvim/"), vim.fn.expand("~/.config/nvim/")}` sync everything within `~/.dotfiles/nvim` into `~/.config/nvim`
+---Ex: `{vim.fn.expand("~/.dotfiles/nvim/"), vim.fn.expand("~/.config/nvim/")}` sync everything within `~/.dotfiles/nvim` into `~/.config/nvim/`
 ---@class SyncmapConfigMatch
 ---@field [1] RsyncPath @[required] Path to sync from
 ---@field [2] RsyncPath @[required] Path to sync to
