@@ -21,14 +21,4 @@ function M.setup(opts)
 	M.commands.setup()
 end
 
----Shows the current state of Syncmap
-function M.show_state()
-	vim.print(M.state.active)
-end
-
----Shows the current options of Syncmap
-function M.show_opts()
-	vim.print(M.opts)
-end
-
 return M

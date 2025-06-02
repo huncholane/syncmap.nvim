@@ -85,8 +85,8 @@ function M.row_to_rsync_params(m)
 	local flags = M.extract_flags(m)
 	---@type RsyncParams
 	return {
-		src = m[1],
-		dst = m[2],
+		src = vim.fn.expand(m[1]),
+		dst = vim.fn.expand(m[2]),
 		flags = flags,
 		reverse_sync_on_spawn = M.extract_reverse(m),
 	}

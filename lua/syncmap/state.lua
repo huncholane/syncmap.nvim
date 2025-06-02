@@ -98,9 +98,10 @@ end
 
 ---Kills all the active inotifywatch servers
 function M.killall()
-	for src in M.active do
+	for src in pairs(M.active) do
 		utils.kill(src)
 	end
+	M.active = {}
 end
 
 ---Clears the saved information by deleting the state file
@@ -118,6 +119,16 @@ end
 function M.restart()
 	M.killall()
 	M.sync()
+end
+
+---List active
+function M.show_active()
+	vim.print(M.active)
+end
+
+---Shows the current options of Syncmap
+function M.show_opts()
+	vim.print(M.opts)
 end
 
 return M
