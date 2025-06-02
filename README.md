@@ -63,6 +63,15 @@ if false then
   require("syncmap.lazy")
 end
 ---@type SyncmapLazySpec
+return {
+  "huncholane/syncmap.nvim",
+  opts = {
+    map = {
+      { vim.fn.expand("~/.dotfiles/test/"), vim.fn.expand("~/.config/test/") },
+    },
+    log_level = "info",
+  },
+}
 ```
 
 ![type-sample](./doc/type.png)
