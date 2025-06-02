@@ -4,6 +4,7 @@ M.rsync = require("syncmap.rsync")
 M.utils = require("syncmap.utils")
 M.default = require("syncmap.default")
 M.log = require("syncmap.log")
+M.commands = require("syncmap.commands")
 
 M.opts = M.default
 
@@ -15,7 +16,9 @@ function M.setup(opts)
 	M.state.opts = M.opts
 	M.rsync.opts = M.opts
 	M.log.opts = M.opts
-	M.state.sync(M.opts)
+	M.commands.opts = M.opts
+	M.state.sync()
+	M.commands.setup()
 end
 
 ---Shows the current state of Syncmap

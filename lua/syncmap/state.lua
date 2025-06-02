@@ -48,8 +48,8 @@ end
 load_state()
 
 ---Removes stale states, calls reverse_rsync on new folders, and starts watch on dead pids
----@param opts FinalSyncmapOpts
-function M.sync(opts)
+function M.sync()
+	local opts = M.opts
 	---@type table<RsyncPath, SyncmapConfigMatch>
 	local lookup = {}
 	for _, m in ipairs(opts.map) do
@@ -96,16 +96,28 @@ function M.save()
 	fd:close()
 end
 
+---Kills all the active inotifywatch servers
+function M.killall()
+	for src in M.active do
+		utils.kill(src)
+	end
+end
+
 ---Clears the saved information by deleting the state file
 function M.clear()
-	for _, a in ipairs(M.active) do
-	end
+	M.killall()
 	local ok, err = os.remove(M.state_file)
 	if not ok then
 		log.error("Failed to delete state file: " .. err)
 	else
 		log.info("State file deleted")
 	end
+end
+
+---Restarts Syncmap
+function M.restart()
+	M.killall()
+	M.sync()
 end
 
 return M
