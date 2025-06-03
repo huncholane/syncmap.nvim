@@ -63,20 +63,21 @@ function M.sync()
 	-- Iterate active and sync what exists
 	for tag, pid in pairs(M.active) do
 		if not lookup[tag] then
-			log.info(string.format("Removed from the config.\n%s\nRemoving the process %d.", tag, pid))
+			log.info(string.format("Removed from the config.\n%s\nRemoving the process %s.", tag, pid))
 			M.active[tag] = nil
 			simple_cmd.kill(pid)
 		elseif not simple_cmd.exists(pid) then
-			log.info(
-				string.format(
-					"In active table but the process %d is not running.\n%s\nStarting a new process.",
-					pid,
-					tag
-				)
-			)
 			local m = lookup[tag]
 			local r = utils.row_to_rsync_params(m)
 			M.active[tag] = rsync.spawn_watcher(r)
+			log.info(
+				string.format(
+					"In active table but the process %s is not running.\n%s\nStarting a new process at %s.",
+					pid,
+					tag,
+					M.active[tag]
+				)
+			)
 		end
 	end
 
@@ -84,9 +85,11 @@ function M.sync()
 	for _, m in ipairs(opts.map) do
 		local tag = vim.fn.expand(m[1]) .. ":" .. vim.fn.expand(m[2])
 		if not M.active[tag] then
-			log.info(string.format("%s\nIn the config but not in the active table. Starting a new process.", tag))
 			local r = utils.row_to_rsync_params(m)
 			M.active[tag] = rsync.spawn_watcher(r)
+			log.info(
+				string.format("%s\nIn the config but not in the active table.\nNew process is %s.", tag, M.active[tag])
+			)
 		end
 	end
 	M.save()

@@ -9,9 +9,11 @@ end
 
 ---@type table<LogLevel, vim.log.levels>
 M.log_table = {
+	["trace"] = vim.log.levels.TRACE,
+	["debug"] = vim.log.levels.DEBUG,
 	["info"] = vim.log.levels.INFO,
 	["error"] = vim.log.levels.ERROR,
-	["none"] = vim.log.levels.OFF,
+	["off"] = vim.log.levels.OFF,
 }
 
 ---Logs a message based on options log level
@@ -29,6 +31,18 @@ end
 ---@param msg any
 function M.info(msg)
 	M.log(msg, vim.log.levels.INFO)
+end
+
+---Logs message as debug
+---@param msg any
+function M.debug(msg)
+	M.log(msg, vim.log.levels.DEBUG)
+end
+
+---Logs message as trace
+---@param msg any
+function M.trace(msg)
+	M.log(msg, vim.log.levels.TRACE)
 end
 
 ---Logs message as error

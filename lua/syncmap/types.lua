@@ -17,9 +17,11 @@
 ---| string     # allow custom flags too
 
 ---@alias LogLevel
+---| "trace" show trace logs
+---| "debug" show debug logs
 ---| "info" show info logs
 ---| "error" show error logs
----| "none" show no logs
+---| "off" turn off logs
 
 ---Ex: `--exclude-from='.gitignore'`
 ---@alias ExcludeFrom string @[default=".gitignore"] Adds --exclude-from in rsync
