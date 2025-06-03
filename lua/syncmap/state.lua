@@ -138,11 +138,7 @@ end
 
 ---List active
 function M.show_active()
-	local s = ""
-	for tag, pid in M.active do
-		s = string.format("%d: %s", pid, tag)
-	end
-	log.print("Current active watchers\n" .. s)
+	vim.print(M.active)
 end
 
 ---Shows the current options of Syncmap
