@@ -53,6 +53,7 @@ end
 function M.extract_exclude_from(m)
 	if m.exclude_from == nil then
 		if M.opts.exclude_from ~= nil then
+			m.exclude_from = M.opts.exclude_from
 			return M.string_to_exclude_from(M.opts.exclude_from)
 		end
 		return nil
@@ -69,12 +70,15 @@ function M.extract_flags(m)
 	if flags == nil then
 		flags = M.opts.rsync
 	end
+	local exclude_from = M.extract_exclude_from(m)
 	if m.exclude_from == nil then
 		return flags
 	end
-	if is_dir(m[1]) then
-		if file_exists(with_trailing_slash(m[1]) .. m.exclude_from) then
-			table.insert(flags, M.extract_exclude_from(m))
+	local src = vim.fn.expand(m[1])
+	local stat = vim.uv.fs_stat(src)
+	if stat and stat.type == "directory" then
+		if file_exists(with_trailing_slash(src) .. m.exclude_from) then
+			table.insert(flags, exclude_from)
 		end
 	end
 	return flags
