@@ -28,28 +28,22 @@ function M.spawn_watcher(args)
 		})
 	end
 
+	local cmd = string.format(
+		"while inotifywait -r -m -e modify,create,delete %q; do rsync %s %q %q; done #syncmap:%s",
+		args.src,
+		table.concat(args.flags, " "),
+		args.src,
+		args.dst,
+		args.src
+	)
+	local cmd_str = "sh -c '" .. cmd .. "'"
+
 	simple_cmd.spawn("sh", {
-		args = {
-			"-c",
-			string.format(
-				"while inotifywait -r -e modify,create,delete %q; do rsync %s %q %q; done",
-				args.src,
-				table.concat(args.flags, " "),
-				args.src,
-				args.dst
-			),
-		},
+		args = { "-c", cmd },
 		path = "sh",
 		cwd = args.src,
 		callback = function(code, status, _, pid)
-			log.info(
-				string.format(
-					"The inotify trigger ended with %d code and status %d.\nThe pid from handle is %d.",
-					code,
-					status,
-					pid
-				)
-			)
+			log.info(string.format("%s\n%d completed with %d code and %d status", cmd_str, pid, code, status))
 		end,
 	})
 end

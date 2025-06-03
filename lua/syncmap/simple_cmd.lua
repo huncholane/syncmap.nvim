@@ -20,7 +20,7 @@ local M = {}
 ---@param path string the exectuable path
 ---@param p SpawnCommandParams
 function M.spawn(path, p)
-	local args = p[2]
+	local args = p.args
 	local stdio = p.stdio or { nil, nil, nil }
 	local cwd = p.cwd or vim.fn.getcwd()
 	local env = p.env or vim.fn.environ()
