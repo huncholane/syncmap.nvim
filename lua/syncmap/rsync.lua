@@ -35,12 +35,16 @@ function M.spawn_watcher(args)
 	end
 
 	local cmd = "while inotifywait "
-	if vim.uv.fs_stat(args.src).type == "directory" then
+	local stat = vim.uv.fs_stat(args.src)
+	if stat and stat.type == "directory" then
 		log.debug(string.format("Setting up inotify for a file.\n%s", args.src))
 		cmd = cmd .. string.format("-r -e modify,create,delete %q; ", args.src)
-	else
+	elseif stat and stat.type == "file" then
 		log.debug(string.format("Setting up inotify for a file.\n%s", args.src))
-		cmd = cmd .. string.format("-e  %q; ", args.src)
+		cmd = cmd .. string.format("-e modify %q; ", args.src)
+	else
+		log.error(string.format("Could not stat %s", args.src))
+		return "NO STAT"
 	end
 	cmd = cmd .. string.format("do rsync %s %q %q; done", table.concat(args.flags, " "), args.src, args.dst)
 	local cmd_str_for_log = "sh -c '" .. cmd .. "'"
@@ -48,7 +52,6 @@ function M.spawn_watcher(args)
 	local handle, pid = simple_cmd.spawn("sh", {
 		args = { "-c", cmd },
 		path = "sh",
-		-- cwd = args.src,
 		callback = function(code, status, _, pid)
 			log.debug(string.format("%s\n%d completed with %d code and %d status", cmd_str_for_log, pid, code, status))
 		end,
@@ -58,7 +61,7 @@ function M.spawn_watcher(args)
 	else
 		log.debug(string.format("Started the following command with pid %d\n%s", pid, cmd_str_for_log))
 	end
-	return pid
+	return pid, cmd_str_for_log
 end
 
 return M

@@ -69,11 +69,13 @@ function M.sync()
 		elseif not simple_cmd.exists(pid) then
 			local m = lookup[tag]
 			local r = utils.row_to_rsync_params(m)
-			M.active[tag] = rsync.spawn_watcher(r)
+			local cmd_str
+			M.active[tag], cmd_str = rsync.spawn_watcher(r)
 			log.info(
 				string.format(
-					"In active table but the process %s is not running.\n%s\nStarting a new process at %s.",
+					"In active table but the process %s is not running.\n%s\n%s\nStarting a new process at %s.",
 					pid,
+					cmd_str,
 					tag,
 					M.active[tag]
 				)
@@ -86,9 +88,15 @@ function M.sync()
 		local tag = vim.fn.expand(m[1]) .. ":" .. vim.fn.expand(m[2])
 		if not M.active[tag] then
 			local r = utils.row_to_rsync_params(m)
-			M.active[tag] = rsync.spawn_watcher(r)
+			local cmd_str
+			M.active[tag], cmd_str = rsync.spawn_watcher(r)
 			log.info(
-				string.format("%s\nIn the config but not in the active table.\nNew process is %s.", tag, M.active[tag])
+				string.format(
+					"%s\nIn the config but not in the active table.\n%s\nNew process is %s.",
+					tag,
+					cmd_str,
+					M.active[tag]
+				)
 			)
 		end
 	end
