@@ -11,8 +11,15 @@ function M.run(args)
 	local result = vim.fn.system(cmd)
 	if vim.v.shell_error ~= 0 then
 		log.error(table.concat(cmd, " ") .. " failed:\n" .. result)
+		log.error(
+			string.format(
+				"Failed to run the the following rsync command.\n%s\nResult: %s",
+				table.concat(cmd, " "),
+				result
+			)
+		)
 	else
-		log.info(table.concat(cmd, " ") .. " succeeded")
+		log.info("Successfully ran the following rsync command.\n" .. table.concat(cmd, " "))
 	end
 	return result
 end
@@ -28,27 +35,24 @@ function M.spawn_watcher(args)
 		})
 	end
 
-	local tag = string.format("syncmap:%s->%s", args.src, args.dst)
-
 	local cmd = string.format(
-		"while inotifywait -r -m -e modify,create,delete %q; do rsync %s %q %q; done; : %s",
+		"while inotifywait -r -e modify,create,delete %q; do rsync %s %q %q; done",
 		args.src,
 		table.concat(args.flags, " "),
 		args.src,
-		args.dst,
-		tag
+		args.dst
 	)
-	local cmd_str = "sh -c '" .. cmd .. "'"
+	local cmd_str_for_log = "sh -c '" .. cmd .. "'"
 
 	local _, pid = simple_cmd.spawn("sh", {
 		args = { "-c", cmd },
 		path = "sh",
 		cwd = args.src,
 		callback = function(code, status, _, pid)
-			log.info(string.format("%s\n%d completed with %d code and %d status", cmd_str, pid, code, status))
+			log.info(string.format("%s\n%d completed with %d code and %d status", cmd_str_for_log, pid, code, status))
 		end,
 	})
-	log.info(string.format("%s\nPid is %d", cmd_str, pid))
+	log.info(string.format("Started the following command with pid %d\n%s", pid, cmd_str_for_log))
 	return pid
 end
 
