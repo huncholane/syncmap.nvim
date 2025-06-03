@@ -1,6 +1,7 @@
 local rsync = require("syncmap.rsync")
 local utils = require("syncmap.utils")
 local log = require("syncmap.log")
+local simple_cmd = require("syncmap.simple_cmd")
 local M = {
 	opts = require("syncmap.default"),
 }
@@ -28,7 +29,9 @@ local function create_state_file()
 end
 create_state_file()
 
----@alias RunningSrcs table<RsyncPath, boolean>
+---@alias RunningPid string|integer The process id for a SyncmapWatchItem
+---@alias RunningTag string A key based on src:dst for a SyncmapWatchItem
+---@alias RunningSrcs table<RsyncPath, RunningPid>
 
 ---A dictionairy keyed on the src for a match located in ~/.local/share/nvim/syncmap/state.json
 ---@type RunningSrcs
@@ -50,30 +53,40 @@ load_state()
 ---Removes stale states, calls reverse_rsync on new folders, and starts watch on dead pids
 function M.sync()
 	local opts = M.opts
-	---@type table<RsyncPath, SyncmapConfigMatch>
+	---@type table<RunningTag, SyncmapWatchItem>
 	local lookup = {}
 	for _, m in ipairs(opts.map) do
-		lookup[m[1]] = m
+		local tag = vim.fn.expand(m[1]) .. ":" .. vim.fn.expand(m[2])
+		lookup[tag] = m
 	end
 
-	for src in pairs(M.active) do
-		if not lookup[src] then
-			M.active[src] = nil
-			utils.kill(src)
-		elseif utils.search(src) == "" then
-			local m = lookup[src]
+	-- Iterate active and sync what exists
+	for tag, pid in pairs(M.active) do
+		if not lookup[tag] then
+			log.info(string.format("Removed from the config.\n%s\nRemoving the process %d.", tag, pid))
+			M.active[tag] = nil
+			utils.kill(pid)
+		elseif not simple_cmd.exists(pid) then
+			log.info(
+				string.format(
+					"In active table but the process %d is not running.\n%s\nStarting a new process.",
+					pid,
+					tag
+				)
+			)
+			local m = lookup[tag]
 			local r = utils.row_to_rsync_params(m)
-			log.info("Couldn't find process for " .. m[1] .. " " .. m[2])
-			rsync.spawn_watcher(r)
-			M.active[r.src] = true
+			M.active[tag] = rsync.spawn_watcher(r)
 		end
 	end
 
+	---Iterate config and add new items
 	for _, m in ipairs(opts.map) do
-		if not M.active[m[1]] then
+		local tag = vim.fn.expand(m[1]) .. ":" .. vim.fn.expand(m[2])
+		if not M.active[tag] then
+			log.info(string.format("%s\nIn the config but not in the active table. Starting a new process.", tag))
 			local r = utils.row_to_rsync_params(m)
-			rsync.spawn_watcher(r)
-			M.active[r.src] = true
+			M.active[tag] = rsync.spawn_watcher(r)
 		end
 	end
 	M.save()
@@ -82,13 +95,13 @@ end
 function M.save()
 	local ok, encoded = pcall(vim.json.encode, M.active)
 	if not ok then
-		utils.log("Failed to encode state", vim.log.levels.ERROR)
+		log.error("Failed to encode state")
 		return
 	end
 
 	local fd = io.open(M.state_file, "w")
 	if not fd then
-		utils.log("Failed to open state file for writing", vim.log.levels.ERROR)
+		log.error("Failed to open state file for writing")
 		return
 	end
 
@@ -98,15 +111,17 @@ end
 
 ---Kills all the active inotifywatch servers
 function M.killall()
-	for src in pairs(M.active) do
-		utils.kill(src)
+	local s = ""
+	for tag, pid in pairs(M.active) do
+		s = string.format("%s\n%d: %s", s, pid, tag)
+		simple_cmd.kill(pid)
 	end
+	log.info(string.format("Killed the following watch items\n%s", s))
 	M.active = {}
 end
 
 ---Clears the saved information by deleting the state file
-function M.clear()
-	M.killall()
+function M.clean()
 	local ok, err = os.remove(M.state_file)
 	if not ok then
 		log.error("Failed to delete state file: " .. err)
@@ -123,7 +138,11 @@ end
 
 ---List active
 function M.show_active()
-	vim.print(M.active)
+	local s = ""
+	for tag, pid in M.active do
+		s = string.format("%d: %s", pid, tag)
+	end
+	log.print("Current active watchers\n" .. s)
 end
 
 ---Shows the current options of Syncmap

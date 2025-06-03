@@ -3,7 +3,7 @@ local M = {
 }
 
 ---Correctly extracts reverse_sync_on_spawn
----@param row SyncmapConfigMatch
+---@param row SyncmapWatchItem
 function M.extract_reverse(row)
 	if row.reverse_sync_on_spawn == nil then
 		if M.opts.reverse_sync_on_startup == nil then
@@ -49,7 +49,7 @@ function M.string_to_exclude_from(s)
 end
 
 ---Gets the exclude from using parent pattern
----@param m SyncmapConfigMatch
+---@param m SyncmapWatchItem
 function M.extract_exclude_from(m)
 	if m.exclude_from == nil then
 		if M.opts.exclude_from ~= nil then
@@ -62,7 +62,7 @@ function M.extract_exclude_from(m)
 end
 
 ---Makes sure to extract flags correctly
----@param m SyncmapConfigMatch
+---@param m SyncmapWatchItem
 ---@return RsyncFlag[]
 function M.extract_flags(m)
 	local flags = m.rsync
@@ -80,7 +80,7 @@ function M.extract_flags(m)
 	return flags
 end
 
----@param m SyncmapConfigMatch
+---@param m SyncmapWatchItem
 function M.row_to_rsync_params(m)
 	local flags = M.extract_flags(m)
 	---@type RsyncParams
@@ -92,16 +92,15 @@ function M.row_to_rsync_params(m)
 	}
 end
 
----Kills an inotifywait instance based on the src name
----@param src string
-function M.kill(src)
-	vim.fn.system({ "pkill", "-f", "^inotifywait.*" .. src })
-end
-
----Searches for an existing inotifywait instance based on the src name
----@param src string
-function M.search(src)
-	return vim.fn.system({ "pgrep", "-f", "^inotifywait.*" .. src })
+---@param str string
+---@param sep string
+---@return string[]
+function M.split(str, sep)
+	local result = {}
+	for part in string.gmatch(str, "([^" .. sep .. "]+)") do
+		table.insert(result, part)
+	end
+	return result
 end
 
 return M

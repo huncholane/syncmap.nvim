@@ -28,17 +28,19 @@ function M.spawn_watcher(args)
 		})
 	end
 
+	local tag = string.format("syncmap:%s->%s", args.src, args.dst)
+
 	local cmd = string.format(
-		"while inotifywait -r -m -e modify,create,delete %q; do rsync %s %q %q; done #syncmap:%s",
+		"while inotifywait -r -m -e modify,create,delete %q; do rsync %s %q %q; done; : %s",
 		args.src,
 		table.concat(args.flags, " "),
 		args.src,
 		args.dst,
-		args.src
+		tag
 	)
 	local cmd_str = "sh -c '" .. cmd .. "'"
 
-	simple_cmd.spawn("sh", {
+	local _, pid = simple_cmd.spawn("sh", {
 		args = { "-c", cmd },
 		path = "sh",
 		cwd = args.src,
@@ -46,6 +48,8 @@ function M.spawn_watcher(args)
 			log.info(string.format("%s\n%d completed with %d code and %d status", cmd_str, pid, code, status))
 		end,
 	})
+	log.info(string.format("%s\nPid is %d", cmd_str, pid))
+	return pid
 end
 
 return M

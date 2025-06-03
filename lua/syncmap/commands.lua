@@ -10,8 +10,8 @@ function M.setup()
 		{ desc = "Clears everything and starts all the inotify servers again" }
 	)
 	vim.api.nvim_create_user_command(
-		"SyncmapStop",
-		state.clear,
+		"SyncmapClean",
+		state.clean,
 		{ desc = "Clears the active map and all of it's processes" }
 	)
 	vim.api.nvim_create_user_command(

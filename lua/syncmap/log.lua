@@ -37,4 +37,10 @@ function M.error(msg)
 	M.log(msg, vim.log.levels.ERROR)
 end
 
+---Prints a message regardless of log level
+---@param msg any
+function M.print(msg)
+	vim.print("[syncmap] " .. msg)
+end
+
 return M
