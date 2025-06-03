@@ -36,15 +36,15 @@
 
 ---Configurations for syncmap
 ---@class SyncmapOpts
----@field map? SyncmapConfigMatch[] @[default=~/.dotfiles/nvim/ ~/.config/nvim/] The folders and files to keep synchronized
+---@field map? SyncmapConfigMatch[] @[default={}] The folders and files to keep synchronized
 ---@field reverse_sync_on_startup? ReverseSyncOnSpawn
 ---@field rsync? RsyncFlag[] @[default={"-a", "--delete"}] Rsync flags that will be used if a map item doesn't include anything. I.E. Default flags
 ---@field log_level? LogLevel @[default="error"] Sets the log level for syncmap
 ---@field exclude_from? ExcludeFrom
 
----Final config
+---Final config used in the plugin code. Use `SyncmapOpts` for your config
 ---@class FinalSyncmapOpts
----@field map SyncmapConfigMatch[] @[default=~/.dotfiles/nvim/ ~/.config/nvim] The folders and files to keep synchronized
+---@field map SyncmapConfigMatch[] @[default={}] The folders and files to keep synchronized
 ---@field reverse_sync_on_startup ReverseSyncOnSpawn
 ---@field rsync RsyncFlag[] @[default={"-a", "--delete"}] Rsync flags that will be used if a map item doesn't include anything. I.E. Default flags
 ---@field log_level LogLevel @[default="error"] Sets the log level for syncmap
