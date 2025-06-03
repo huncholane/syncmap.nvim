@@ -16,6 +16,10 @@ A lightweight Neovim plugin that keeps directories in sync using `inotifywait`, 
 - Fully typed config for autocompletion and inline docs
 - Automatically expands paths in the config
 
+## Warning
+
+- Updates made in the dst will be overwritten by the updates made in src
+
 ## Requirements
 
 - Linux (uses `inotifywait`)

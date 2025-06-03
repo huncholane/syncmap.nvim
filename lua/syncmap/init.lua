@@ -17,8 +17,8 @@ function M.setup(opts)
 	M.rsync.opts = M.opts
 	M.log.opts = M.opts
 	M.commands.opts = M.opts
-	M.state.sync()
 	M.commands.setup()
+	M.state.sync()
 end
 
 return M

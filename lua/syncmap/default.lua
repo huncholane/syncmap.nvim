@@ -1,5 +1,3 @@
-local expand = vim.fn.expand
-
 ---@type FinalSyncmapOpts
 return {
 	map = {},

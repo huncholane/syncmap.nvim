@@ -1,5 +1,5 @@
 local log = require("syncmap.log")
-local utils = require("syncmap.utils")
+local simple_cmd = require("syncmap.simple_cmd")
 local M = {
 	opts = require("syncmap.default"),
 }
@@ -22,16 +22,8 @@ function M.spawn_watcher(args)
 	if M.opts.reverse_sync_on_startup then
 		M.run(args)
 	end
-	local cmd = string.format(
-		"while inotifywait -r -e modify,create,delete %q; do rsync %s %q %q; done",
-		args.src,
-		table.concat(utils.extract_flags(args.flags), " "),
-		args.src,
-		args.dst
-	)
 
-	local handle
-	handle, _ = vim.uv.spawn("sh", {
+	simple_cmd.spawn("sh", {
 		args = {
 			"-c",
 			string.format(
@@ -42,20 +34,20 @@ function M.spawn_watcher(args)
 				args.dst
 			),
 		},
-		stdio = { nil, nil, nil },
+		path = "sh",
 		cwd = args.src,
-		env = vim.fn.environ(),
-		detached = true,
-		hide = true,
-		---@diagnostic disable-next-line: assign-type-mismatch
-		uid = vim.uv.getuid(),
-		verbatim = false,
-		---@diagnostic disable-next-line: assign-type-mismatch
-		gid = vim.uv.getgid(),
-	}, function(code, signal)
-		log.info(cmd .. "\nEnded with code " .. code .. " and signal " .. signal)
-		handle:close()
-	end)
+		callback = function(code, status, handle, pid)
+			log.info(
+				string.format(
+					"The process ended with %q code and status %q.\nThe pid from handle is %q.\nThe original pid is %q.",
+					code,
+					status,
+					handle:get_pid(),
+					pid
+				)
+			)
+		end,
+	})
 end
 
 return M
