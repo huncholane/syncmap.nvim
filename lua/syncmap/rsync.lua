@@ -20,7 +20,12 @@ end
 ---@param args RsyncParams
 function M.spawn_watcher(args)
 	if M.opts.reverse_sync_on_startup then
-		M.run(args)
+		M.run({
+			src = args.dst,
+			dst = args.src,
+			reverse_sync_on_spawn = args.reverse_sync_on_spawn,
+			flags = args.flags,
+		})
 	end
 
 	simple_cmd.spawn("sh", {
@@ -36,13 +41,12 @@ function M.spawn_watcher(args)
 		},
 		path = "sh",
 		cwd = args.src,
-		callback = function(code, status, handle, pid)
+		callback = function(code, status, _, pid)
 			log.info(
 				string.format(
-					"The process ended with %q code and status %q.\nThe pid from handle is %q.\nThe original pid is %q.",
+					"The inotify trigger ended with %d code and status %d.\nThe pid from handle is %d.",
 					code,
 					status,
-					handle:get_pid(),
 					pid
 				)
 			)
