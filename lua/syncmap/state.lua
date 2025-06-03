@@ -65,7 +65,7 @@ function M.sync()
 		if not lookup[tag] then
 			log.info(string.format("Removed from the config.\n%s\nRemoving the process %d.", tag, pid))
 			M.active[tag] = nil
-			utils.kill(pid)
+			simple_cmd.kill(pid)
 		elseif not simple_cmd.exists(pid) then
 			log.info(
 				string.format(
