@@ -18,7 +18,10 @@ function M.setup(opts)
 	M.log.opts = M.opts
 	M.commands.opts = M.opts
 	M.commands.setup()
-	M.state.sync()
+	vim.api.nvim_create_autocmd("User", {
+		pattern = "VeryLazy",
+		callback = M.state.sync,
+	})
 end
 
 return M

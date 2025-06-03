@@ -19,7 +19,9 @@ M.log_table = {
 ---@param level vim.log.levels
 function M.log(msg, level)
 	if level >= M.log_table[M.opts.log_level] then
-		vim.notify("[syncmap] " .. msg, level)
+		vim.schedule(function()
+			vim.notify("[syncmap] " .. msg, level)
+		end)
 	end
 end
 
