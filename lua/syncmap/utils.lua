@@ -45,7 +45,7 @@ end
 
 ---@param s string
 function M.string_to_exclude_from(s)
-	return "--exclude_from='" .. s .. "'"
+	return "--exclude-from='" .. s .. "'"
 end
 
 ---Gets the exclude from using parent pattern
@@ -78,7 +78,7 @@ function M.extract_flags(m)
 	local stat = vim.uv.fs_stat(src)
 	if stat and stat.type == "directory" then
 		if file_exists(with_trailing_slash(src) .. m.exclude_from) then
-			table.insert(flags, exclude_from)
+			-- table.insert(flags, exclude_from)
 		end
 	end
 	return flags
