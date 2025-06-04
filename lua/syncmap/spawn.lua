@@ -1,5 +1,3 @@
-local M = {}
-
 ---@alias StdIO integer|uv.uv_stream_t|nil
 
 ---@alias SpawnCommandCallback fun(code:integer, signal:integer, handle:uv.uv_process_t, pid:integer)
@@ -21,7 +19,7 @@ local M = {}
 ---A wrapper for uv.spawn that includes defaults. This makes it easier to spawn commands in the background. Also automatically closes the handle unless close is specified to false.
 ---@param path string the exectuable path
 ---@param p SpawnCommandParams
-function M.spawn(path, p)
+return function(path, p)
 	local args = p.args
 	local stdio = p.stdio or { nil, nil, nil }
 	local cwd = p.cwd or vim.fn.getcwd()
@@ -56,29 +54,3 @@ function M.spawn(path, p)
 	end)
 	return handle, pid
 end
-
----Kills a process and all of its descendents
----@param pid integer|string
-function M.kill(pid)
-	vim.fn.system({ "kill", "-TERM", "-" .. tostring(pid) })
-end
-
----Checks if a process is running
----@param pid string|integer
-function M.exists(pid)
-	local result = false
-	local done = false
-	M.spawn("ps", {
-		args = { "-s", tostring(pid) },
-		callback = function(code, _, _, _)
-			result = code == 0
-			done = true
-		end,
-	})
-	vim.wait(100, function()
-		return done
-	end, 10)
-	return result
-end
-
-return M
